@@ -2,7 +2,6 @@
 // swiftlint:disable variable_name
 
 import Foundation
-import CommonCore
 #if os(iOS) || os(tvOS) || os(watchOS)
 import UIKit
 #elseif os(OSX)
@@ -10,17 +9,91 @@ import AppKit
 #endif
 
 #if DEBUG
-{% for import in argument.autoMockableImports %}
+{% for import in argument.imports %}
 import {{ import }}
 {% endfor %}
 
-{% for import in argument.autoMockableTestableImports %}
+{% for import in argument.testableImports %}
 @testable import {{ import }}
 {% endfor %}
 
+// MARK: Random Extension
+fileprivate extension String {
+    static func random(length: Int = 10) -> String {
+        guard length > 0 else {
+            return ""
+        }
+        let characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        return String((0..<length).compactMap { _ in characters.randomElement() })
+    }
+}
+
+fileprivate extension Int {
+    static func random() -> Int {
+        return Int.random(in: 0...Int.max)
+    }
+}
+
+fileprivate extension Int32 {
+    static func random() -> Int32 {
+        return Int32.random(in: 0...Int32.max)
+    }
+}
+
+fileprivate extension Int64 {
+    static func random() -> Int64 {
+        return Int64.random(in: 0...Int64.max)
+    }
+}
+
+fileprivate extension Double {
+    static func random() -> Double {
+        return Double.random(in: 0...1)
+    }
+}
+
+fileprivate extension Date {
+    static func random() -> Date {
+        return Date()
+    }
+}
+
+fileprivate extension TimeZone {
+    static func random() -> TimeZone {
+        return TimeZone.current
+    }
+}
+
+fileprivate extension Dictionary where Key == String, Value == Any {
+    static func random(count: Int = 5) -> [String: Any] {
+        var result: [String: Any] = [:]
+        let randomValues: [Any] = [
+            Int.random(),
+            String.random(),
+            Double.random(),
+            Bool.random(),
+            Date.random(),
+        ]
+
+        for _ in 0..<count {
+            let key = String.random()
+            let value = randomValues.randomElement()!
+            result[key] = value
+        }
+        return result
+    }
+}
+
+fileprivate extension CaseIterable {
+    static func random() -> Self {
+        allCases.randomElement()!
+    }
+}
+
 {% macro randomValue variable %}{% if variable|annotated:"randomValue" %}{{ '"' if variable.typeName.name|replace:"?","" == "String" }}{{ variable.annotations.randomValue }}{{ '"' if variable.typeName.name|replace:"?","" }}{% else %}{{ variable.typeName.name | replace:"?","" }}.random(){% endif %}{% endmacro %}
 
-{% for type in types.structs where type|annotated:"AutoRandomizable" %}
+// MARK: Random Classes, Structs, and Enums
+{% for type in types.structs where type|annotated:"Randomizable" %}
 extension {{ type.name }} {
     static func random() -> {{ type.name | replace:"?","" }} {
         return {{ type.name }}(
@@ -29,9 +102,16 @@ extension {{ type.name }} {
         )
     }
 }
+{% if type.annotations.Randomizable == "+array" %}
+extension Array where Element == {{ type.name }} {
+    static func random(count: Int = 5) -> [{{ type.name | replace:"?","" }}] {
+        return (0...count).map {_ in {{ type.name | replace:"?","" }}.random() }
+    }
+}
+{% endif %}
 {% endfor %}
 
-{% for type in types.enums where type|annotated:"AutoRandomizable" %}
+{% for type in types.enums where type|annotated:"Randomizable" %}
 extension {{ type.name }} {
     static func random() -> {{ type.name }} {
         let cases: [{{ type.name }}] = [

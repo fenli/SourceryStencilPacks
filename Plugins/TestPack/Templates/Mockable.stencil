@@ -1,3 +1,4 @@
+// Based on modifed version of: https://github.com/krzysztofzablocki/Sourcery/blob/master/Templates/Templates/AutoMockable.stencil
 // swiftlint:disable line_length
 // swiftlint:disable variable_name
 
@@ -8,11 +9,11 @@ import UIKit
 import AppKit
 #endif
 
-{% for import in argument.autoMockableImports %}
+{% for import in argument.imports %}
 import {{ import }}
 {% endfor %}
 
-{% for import in argument.autoMockableTestableImports %}
+{% for import in argument.testableImports %}
 @testable import {{ import }}
 {% endfor %}
 
@@ -357,7 +358,6 @@ import {{ import }}
     {%- endfor -%}
 {%- endmacro -%}
 
-
 {% macro extractProtocolRequirementsFromType type -%}
     {%- set requirements -%}
     {% call extractProtocolRequirementsFromAssociatedTypes type.associatedTypes|sortedValuesByKeys %}
@@ -370,7 +370,7 @@ import {{ import }}
 {%- endmacro %}
 
 // MARK: Mockable Protocols
-{% for type in types.protocols where type.based.AutoMockable or type|annotated:"AutoMockable" %}{% if type.name != "AutoMockable" %}
+{% for type in types.protocols where type|annotated:"Mockable" %}
 {% call accessLevel type.accessLevel %}class {{ type.name }}Mock{% set generics %}{% call extractProtocolCompositionFromAssociatedTypes type %}{% endset %}{{ generics | replace:",>",">"}}: {{ type.name }} {%- set requirements -%}{% call extractProtocolRequirementsFromType type %}{%- endset -%} {{ requirements|replace:",{","{"|replace:"{"," {" }}
 {% for associatedType in type.associatedTypes|sortedValuesByKeys %}
     {% if associatedType.type.kind == nil or not associatedType.type.kind|contains:"protocol" %}
@@ -401,11 +401,12 @@ import {{ import }}
     {% call mockSubscript subscript forloop.counter %}
 {% endfor %}
 }
-{% endif %}{% endfor %}
+
+{% endfor %}
 
 // MARK: Mockable Classes
 #if DEBUG
-{% for type in types.classes where type|annotated:"AutoMockable" %}{% if type.name != "AutoMockable" %}
+{% for type in types.classes where type|annotated:"Mockable" %}
 {% call accessLevel type.accessLevel %}class {{ type.name }}Mock{% set generics %}{% call extractProtocolCompositionFromAssociatedTypes type %}{% endset %}{{ generics | replace:",>",">"}}: {{ type.name }} {%- set requirements -%}{% call extractProtocolRequirementsFromType type %}{%- endset -%} {{ requirements|replace:",{","{"|replace:"{"," {" }}
 {% for associatedType in type.associatedTypes|sortedValuesByKeys %}
     {% if associatedType.type.kind == nil or not associatedType.type.kind|contains:"protocol" %}
@@ -429,5 +430,5 @@ import {{ import }}
 {% endfor %}
 }
 
-{% endif %}{% endfor %}
+{% endfor %}
 #endif

@@ -14,31 +14,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import Foundation
-import PackagePlugin
 
-struct TestPackPluginConfiguration: PluginConfiguration {
-    typealias Value = Config
+class GetProductListUseCase {
     
-    var key: String = "testpack"
-    var value: Config
+    private let productRepository: ProductRepository
     
-    struct Config: Codable {
-        var debugOnly: Bool = true
-        var imports: [String] = []
-        var testableImports: [String] = []
-    }
-}
-
-@main
-struct TestPackPlugin: SourceryStencilPlugin {
-    var name: String = "TestPack"
-    
-    func getImports(context: PluginContext) -> [String] {
-        ["SwiftUI"]
+    init(productRepository: ProductRepository) {
+        self.productRepository = productRepository
     }
     
-    func getTestableImports(context: PluginContext) -> [String] {
-        []
+    func execute() async throws -> [Product] {
+        return try await productRepository.getAllProducts()
     }
 }

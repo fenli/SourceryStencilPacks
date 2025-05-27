@@ -14,31 +14,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import Foundation
-import PackagePlugin
 
-struct TestPackPluginConfiguration: PluginConfiguration {
-    typealias Value = Config
-    
-    var key: String = "testpack"
-    var value: Config
-    
-    struct Config: Codable {
-        var debugOnly: Bool = true
-        var imports: [String] = []
-        var testableImports: [String] = []
-    }
-}
+import Testing
 
-@main
-struct TestPackPlugin: SourceryStencilPlugin {
-    var name: String = "TestPack"
-    
-    func getImports(context: PluginContext) -> [String] {
-        ["SwiftUI"]
-    }
-    
-    func getTestableImports(context: PluginContext) -> [String] {
-        []
+struct SampleTests {
+
+    @Test func example() async throws {
+        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
     }
 }

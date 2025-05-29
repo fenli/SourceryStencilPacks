@@ -9,6 +9,7 @@ import UIKit
 import AppKit
 #endif
 
+#if DEBUG
 {% for import in argument.imports %}
 import {{ import }}
 {% endfor %}
@@ -405,7 +406,6 @@ import {{ import }}
 {% endfor %}
 
 // MARK: Mockable Classes
-#if DEBUG
 {% for type in types.classes where type|annotated:"Mockable" %}
 {% call accessLevel type.accessLevel %}class {{ type.name }}Mock{% set generics %}{% call extractProtocolCompositionFromAssociatedTypes type %}{% endset %}{{ generics | replace:",>",">"}}: {{ type.name }} {%- set requirements -%}{% call extractProtocolRequirementsFromType type %}{%- endset -%} {{ requirements|replace:",{","{"|replace:"{"," {" }}
 {% for associatedType in type.associatedTypes|sortedValuesByKeys %}
@@ -431,4 +431,5 @@ import {{ import }}
 }
 
 {% endfor %}
+
 #endif

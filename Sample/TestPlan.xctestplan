@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "43045DD6-1A80-4C02-BA4C-131968088992",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:SamplePackage",
+        "identifier" : "SamplePackageTests",
+        "name" : "SamplePackageTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Sample.xcodeproj",
+        "identifier" : "45EA17F32DE4472600911E89",
+        "name" : "SampleTests"
+      }
+    }
+  ],
+  "version" : 1
+}

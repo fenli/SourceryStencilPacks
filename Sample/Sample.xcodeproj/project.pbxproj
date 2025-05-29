@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		45C4FC4F2DBE43180087104A /* SamplePackage in Frameworks */ = {isa = PBXBuildFile; productRef = 45C4FC4E2DBE43180087104A /* SamplePackage */; };
+		45FE337A2DE8028B00A820E6 /* TestPlan.xctestplan in Resources */ = {isa = PBXBuildFile; fileRef = 45FE33792DE8028B00A820E6 /* TestPlan.xctestplan */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -24,6 +25,7 @@
 		458DF7202DA12151004C22E2 /* Sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		45C4FBF52DBE3ED00087104A /* SamplePackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = SamplePackage; sourceTree = "<group>"; };
 		45EA17F42DE4472600911E89 /* SampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		45FE33792DE8028B00A820E6 /* TestPlan.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestPlan.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -61,6 +63,7 @@
 		458DF7172DA12151004C22E2 = {
 			isa = PBXGroup;
 			children = (
+				45FE33792DE8028B00A820E6 /* TestPlan.xctestplan */,
 				45C4FBF52DBE3ED00087104A /* SamplePackage */,
 				458DF7222DA12151004C22E2 /* Sample */,
 				45EA17F52DE4472600911E89 /* SampleTests */,
@@ -181,6 +184,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				45FE337A2DE8028B00A820E6 /* TestPlan.xctestplan in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

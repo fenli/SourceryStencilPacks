@@ -1,5 +1,5 @@
 # SourceryStencilPacks
-Convenient way to use collections of Sourcery stencils as an SPM plugins and Xcode plugins. Learn more about Sourcery [here](https://github.com/krzysztofzablocki/Sourcery).
+Convenient way to use collections of Sourcery stencils as an SPM plugins and Xcode plugins. Learn more about it from the [Sourcery repository](https://github.com/krzysztofzablocki/Sourcery).
 
 [![](https://img.shields.io/github/v/release/fenli/SourceryStencilPacks?style=flat&label=Latest%20Release&color=blue)](https://github.com/fenli/SourceryStencilPacks/releases)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffenli%2FSourceryStencilPacks%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/fenli/SourceryStencilPacks)
@@ -35,6 +35,20 @@ Utility for generating test doubles like mocks, stubs, and fakes (by generating 
 #### How to generate mocks and fakes 
 Use `Mockable` annotation to protocols to generate mocks/stubs and `Randomizable` to structs or enums to generate random fakes
 ```swift
+// Generate ProductServiceMock() class
+// sourcery: Mockable
+class ProductService {
+    let repository: ProductRepository
+
+    init(repository: ProductRepository) {
+        self.repository = productRepository
+    }
+    
+    func getProducts() async throws -> [Product] {
+        return try await repository.getAllProducts()
+    }
+}
+
 // Generate ProductRepositoryMock() class
 // sourcery: Mockable
 protocol ProductRepository {
@@ -56,27 +70,34 @@ struct ProductVariant: Equatable {
     let id: Int
     let name: String
 }
-
-// In Unit Test
+```
+```swift
 import Testing
 @testable import SamplePackage
 
 struct ProductServiceTests {
     
+    private var productRepositoryMock: ProductRepositoryMock!
+    private var service: ProductService!
+    
+    init() {
+        productRepositoryMock = ProductRepositoryMock()
+        service = ProductService(productRepository: productRepositoryMock)
+    }
+
     @Test
     func testGetAllProductsSuccess() async throws {
         // Generate fakes with random object
-        let fakeGeneratedProducts = (0...5).map {_ in Product.random() }
+        let fakeProducts = (0...5).map {_ in Product.random() }
 
-        // Use generated mocks for mocking/stubbing protocols
-        productRepository = ProductRepositoryMock()
-        productRepository.getAllProductsProductReturnValue = fakeGeneratedProducts
+        // Use generated mocks for mocking/stubbing
+        productRepositoryMock.getAllProductsProductReturnValue = fakeProducts
 
         // Action
-        // ...
-
+        let result = try await service.getProducts()
+        
         // Asserts
-        #expect(...)
+        #expect(result == fakeProducts)
     }
 }
 ```
@@ -88,21 +109,21 @@ struct ProductServiceTests {
     For more sample usage, please see the SamplePackage.
 
 #### Optional: Custom configuration
-You might not need to customize config but in case you need, you can create `.testpack.json` inside your package directory (same level as Package.swift). All keys here should be present otherwise it will use default value for all config.
+Default plugin configuration should be suitable on most cases, but in case you need to customize it you can create `.testpack.json` inside your package directory (same level as `Package.swift`). All configuration keys here should be present otherwise it will use default value for all config.
 ```json
 {
-	"debug_only": true,
-	"random_std_lib": true,
-	"random_std_lib_protection": "fileprivate",
-	"imports": [],
-	"testable_imports": []
+    "debug_only": true,
+    "random_std_lib": true,
+    "random_std_lib_protection": "fileprivate",
+    "imports": [],
+    "testable_imports": []
 }
 ```
 | Key                        | Default Value  | Description                                                 |
 |----------------------------|----------------|-------------------------------------------------------------|
 | `debug_only`               | `true`         | Generate mocks/random for Debug build only                  |
 | `random_std_lib`           | `true`         | Generate std lib random extension                           |
-| `random_std_lib_protection`| `fileprivate`  | Protection level of std lib random extension  	   	    |
+| `random_std_lib_protection`| `fileprivate`  | Protection level of std lib random extension  	     	    |
 | `imports`                  | `[]`           | List of additional imports to generated sources             |
 | `testable_imports`         | `[]`           | List of additional @testable imports to generated sources   |
 

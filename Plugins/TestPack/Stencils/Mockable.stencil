@@ -432,7 +432,7 @@ import {{ import }}
 {% endif %}
 
 {% for method in type.methods|!definedInExtension %}
-    {% if method.accessLevel == 'public' and not method.isInitializer %}
+    {% if (method.accessLevel == 'public' or method.accessLevel == 'internal') and not method.isInitializer %}
     {% call mockMethod method type.kind %}
     {% endif %}
 {% endfor %}

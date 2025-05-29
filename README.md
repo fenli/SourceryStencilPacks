@@ -88,16 +88,24 @@ struct ProductServiceTests {
     For more sample usage, please see the SamplePackage.
 
 #### Optional: Custom configuration
-You might not need to customize config but in case you need, you can create `.testpack.json` inside your package directory (same level as Package.swift). All keys here should be present otherwise it will use default value.
+You might not need to customize config but in case you need, you can create `.testpack.json` inside your package directory (same level as Package.swift). All keys here should be present otherwise it will use default value for all config.
 ```json
 {
-	"debug_only": true, // Generate mocks/random for Debug build only, defaults = true
-	"random_std_lib": true, // Generate std lib random extension, defaults = true
-	"random_std_lib_protection": "fileprivate", // Protection level of std lib random extension, defaults = "fileprivate"
-	"imports": [], // Additional imports to generated sources
-	"testable_imports": [] // Additional @testable imports to generated sources
+	"debug_only": true,
+	"random_std_lib": true,
+	"random_std_lib_protection": "fileprivate",
+	"imports": [],
+	"testable_imports": []
 }
 ```
+| Key                        | Default Value  | Description                                                 |
+|----------------------------|----------------|-------------------------------------------------------------|
+| `debug_only`               | `true`         | Generate mocks/random for Debug build only                  |
+| `random_std_lib`           | `true`         | Generate std lib random extension                           |
+| `random_std_lib_protection`| `fileprivate`  | Protection level of std lib random extension  	   	    |
+| `imports`                  | `[]`           | List of additional imports to generated sources             |
+| `testable_imports`         | `[]`           | List of additional @testable imports to generated sources   |
+
 
 ## License
 

@@ -17,28 +17,45 @@
 import Foundation
 import PackagePlugin
 
-struct TestPackPluginConfiguration: PluginConfiguration {
-    typealias Value = Config
+struct TestPackPluginConfig: PluginConfig {
+    static var defaultConfig: TestPackPluginConfig { TestPackPluginConfig() }
     
-    var key: String = "testpack"
-    var value: Config
-    
-    struct Config: Codable {
-        var debugOnly: Bool = true
-        var imports: [String] = []
-        var testableImports: [String] = []
-    }
+    var debugOnly: Bool = true
+    var randomStdLib: Bool = true
+    var randomStdLibProtection: String = "fileprivate"
+    var imports: [String] = []
+    var testableImports: [String] = []
 }
 
 @main
 struct TestPackPlugin: SourceryStencilPlugin {
     var name: String = "TestPack"
     
-    func getImports(context: PluginContext) -> [String] {
-        ["SwiftUI"]
+    func getSources(target: any PackagePlugin.Target) -> [URL] {
+        [URL(fileURLWithPath: target.directory.string)]
     }
     
-    func getTestableImports(context: PluginContext) -> [String] {
-        []
+    func getTemplates(context: PackagePlugin.PluginContext) -> [URL] {
+        let pluginPath = getPluginRootPath()
+        return [
+            pluginPath.appending(path: "Stencils/Mockable.stencil"),
+            pluginPath.appending(path: "Stencils/Randomizable.stencil"),
+        ]
+    }
+    
+    func getImports(context: PluginContext, config: Config) -> [String] {
+        config.imports
+    }
+    
+    func getTestableImports(context: PluginContext, config: Config) -> [String] {
+        config.testableImports
+    }
+    
+    func getConfigArguments(config: TestPackPluginConfig) -> [String] {
+        return [
+            "debugOnly=\(config.debugOnly)",
+            "randomStdLib=\(config.randomStdLib)",
+            "randomStdLibProtection=\(config.randomStdLibProtection)"
+        ]
     }
 }

@@ -1,5 +1,5 @@
 # SourceryStencilPacks
-Convenient way to use collections of Sourcery stencils as an SPM plugins and Xcode plugins.
+Convenient way to use collections of Sourcery stencils as an SPM plugins and Xcode plugins. Learn more about Sourcery [here](https://github.com/krzysztofzablocki/Sourcery).
 
 [![](https://img.shields.io/github/v/release/fenli/SourceryStencilPacks?style=flat&label=Latest%20Release&color=blue)](https://github.com/fenli/SourceryStencilPacks/releases)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffenli%2FSourceryStencilPacks%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/fenli/SourceryStencilPacks)
@@ -11,7 +11,7 @@ Convenient way to use collections of Sourcery stencils as an SPM plugins and Xco
 Add this configuration to your `Package.swift`:
 ```swift
 dependencies: [
-    .package(url: "https://github.com/fenli/SourceryStencilPacks", from: "0.1.0"),
+    .package(url: "https://github.com/fenli/SourceryStencilPacks", from: "0.1.1"),
 ],
 ```
 Then add the plugins to your target:
@@ -32,7 +32,8 @@ Then add the plugins to your target:
 ## :rocket: TestPack
 Utility for generating test doubles like mocks, stubs, and fakes (by generating random object).
 
-#### How to use `Mockable` annotation to protocols and `Randomizable` to structs or enums 
+#### How to generate mocks and fakes 
+Use `Mockable` annotation to protocols to generate mocks/stubs and `Randomizable` to structs or enums to generate random fakes
 ```swift
 // Generate ProductRepositoryMock() class
 // sourcery: Mockable
@@ -44,9 +45,9 @@ protocol ProductRepository {
 // Generate Product.random() static function
 // sourcery: Randomizable
 struct Product: Equatable {
-    let name: String
-    let price: Double
-    let variants: [ProductVariant]
+    let name: String // String.random() automatically generated
+    let price: Double // Double.random() automatically generated
+    let variants: [ProductVariant] // Need to annotate also on ProductVariant
 }
 
 // Generate ProductVariant.random() and [ProductVariant].random()
@@ -80,9 +81,23 @@ struct ProductServiceTests {
 }
 ```
 
+    For primitive and standard types, random extension automatically generated like String.random(), Int.random(), Double.random(), etc.
+
     Mocks and Random object only available on DEBUG mode, so it's suitable for testing (not included in release binary). 
+
     For more sample usage, please see the SamplePackage.
 
+#### Optional: Custom configuration
+You might not need to customize config but in case you need, you can create `.testpack.json` inside your package directory (same level as Package.swift). All keys here should be present otherwise it will use default value.
+```json
+{
+	"debug_only": true, // Generate mocks/random for Debug build only, defaults = true
+	"random_std_lib": true, // Generate std lib random extension, defaults = true
+	"random_std_lib_protection": "fileprivate", // Protection level of std lib random extension, defaults = "fileprivate"
+	"imports": [], // Additional imports to generated sources
+	"testable_imports": [] // Additional @testable imports to generated sources
+}
+```
 
 ## License
 

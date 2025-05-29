@@ -1,0 +1,7 @@
+{
+	"debug_only": true,
+	"random_std_lib": true,
+	"random_std_lib_protection": "fileprivate",
+	"imports": ["SwiftUI"],
+	"testable_imports": []
+}

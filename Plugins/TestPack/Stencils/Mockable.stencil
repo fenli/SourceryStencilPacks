@@ -1,6 +1,15 @@
-// Based on modifed version of: https://github.com/krzysztofzablocki/Sourcery/blob/master/Templates/Templates/AutoMockable.stencil
+// Extended version of: https://github.com/krzysztofzablocki/Sourcery/blob/master/Templates/Templates/AutoMockable.stencil
 // swiftlint:disable line_length
 // swiftlint:disable variable_name
+
+// Plugin Arguments:
+{% for key, value in argument %}
+// - {{ key }}: {{ value }}
+{% endfor %}
+
+{% if argument.debugOnly == "true" %}
+#if DEBUG
+{% endif %}
 
 import Foundation
 #if os(iOS) || os(tvOS) || os(watchOS)
@@ -9,7 +18,6 @@ import UIKit
 import AppKit
 #endif
 
-#if DEBUG
 {% for import in argument.imports %}
 import {{ import }}
 {% endfor %}
@@ -432,4 +440,6 @@ import {{ import }}
 
 {% endfor %}
 
+{% if argument.debugOnly == "true" %}
 #endif
+{% endif %}

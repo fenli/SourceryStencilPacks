@@ -1,6 +1,15 @@
 // swiftlint:disable line_length
 // swiftlint:disable variable_name
 
+// Plugin Arguments:
+{% for key, value in argument %}
+// - {{ key }}: {{ value }}
+{% endfor %}
+
+{% if argument.debugOnly == "true" %}
+#if DEBUG
+{% endif %}
+
 import Foundation
 #if os(iOS) || os(tvOS) || os(watchOS)
 import UIKit
@@ -8,7 +17,6 @@ import UIKit
 import AppKit
 #endif
 
-#if DEBUG
 {% for import in argument.imports %}
 import {{ import }}
 {% endfor %}
@@ -17,8 +25,9 @@ import {{ import }}
 @testable import {{ import }}
 {% endfor %}
 
-// MARK: Random Extension
-fileprivate extension String {
+{% if argument.randomStdLib == "true" %}
+// MARK: Random Extension for Standard Libraries
+{{ argument.randomStdLibProtection }} extension String {
     static func random(length: Int = 10) -> String {
         guard length > 0 else {
             return ""
@@ -28,43 +37,43 @@ fileprivate extension String {
     }
 }
 
-fileprivate extension Int {
+{{ argument.randomStdLibProtection }} extension Int {
     static func random() -> Int {
         return Int.random(in: 0...Int.max)
     }
 }
 
-fileprivate extension Int32 {
+{{ argument.randomStdLibProtection }} extension Int32 {
     static func random() -> Int32 {
         return Int32.random(in: 0...Int32.max)
     }
 }
 
-fileprivate extension Int64 {
+{{ argument.randomStdLibProtection }} extension Int64 {
     static func random() -> Int64 {
         return Int64.random(in: 0...Int64.max)
     }
 }
 
-fileprivate extension Double {
+{{ argument.randomStdLibProtection }} extension Double {
     static func random() -> Double {
         return Double.random(in: 0...1)
     }
 }
 
-fileprivate extension Date {
+{{ argument.randomStdLibProtection }} extension Date {
     static func random() -> Date {
         return Date()
     }
 }
 
-fileprivate extension TimeZone {
+{{ argument.randomStdLibProtection }} extension TimeZone {
     static func random() -> TimeZone {
         return TimeZone.current
     }
 }
 
-fileprivate extension Dictionary where Key == String, Value == Any {
+{{ argument.randomStdLibProtection }} extension Dictionary where Key == String, Value == Any {
     static func random(count: Int = 5) -> [String: Any] {
         var result: [String: Any] = [:]
         let randomValues: [Any] = [
@@ -84,15 +93,16 @@ fileprivate extension Dictionary where Key == String, Value == Any {
     }
 }
 
-fileprivate extension CaseIterable {
+{{ argument.randomStdLibProtection }} extension CaseIterable {
     static func random() -> Self {
         allCases.randomElement()!
     }
 }
+{% endif %}
 
 {% macro randomValue variable %}{% if variable|annotated:"randomValue" %}{{ '"' if variable.typeName.name|replace:"?","" == "String" }}{{ variable.annotations.randomValue }}{{ '"' if variable.typeName.name|replace:"?","" }}{% else %}{{ variable.typeName.name | replace:"?","" }}.random(){% endif %}{% endmacro %}
 
-// MARK: Random Classes, Structs, and Enums
+// MARK: Random extension for Classes, Structs, and Enums
 {% for type in types.structs where type|annotated:"Randomizable" %}
 extension {{ type.name }} {
     static func random() -> {{ type.name | replace:"?","" }} {
@@ -131,4 +141,6 @@ extension {{ type.name }} {
 }
 {% endfor %}
 
+{% if argument.debugOnly == "true" %}
 #endif
+{% endif %}

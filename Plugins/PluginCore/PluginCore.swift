@@ -17,30 +17,29 @@
 import Foundation
 import PackagePlugin
 
-protocol PluginConfiguration {
-    associatedtype Value: Codable
-    
-    var key: String { get }
-    var value: Value { get set }
+protocol PluginConfig: Decodable {
+    static var defaultConfig: Self { get }
 }
 
 protocol SourceryStencilPlugin: BuildToolPlugin {
+    associatedtype Config: PluginConfig
+    
     var name: String { get }
     
-    func getImports(context: PluginContext) -> [String]
+    func getSources(target: Target) -> [URL]
     
-    func getTestableImports(context: PluginContext) -> [String]
+    func getTemplates(context: PluginContext) -> [URL]
+    
+    func getImports(context: PluginContext, config: Config) -> [String]
+    
+    func getTestableImports(context: PluginContext, config: Config) -> [String]
+    
+    func getConfigArguments(config: Config) -> [String]
 }
 
 extension SourceryStencilPlugin {
     
     func createBuildCommands(context: PluginContext, target: Target) async throws -> [Command] {
-        let templatesPath = getPluginRootPath().appending(path: "Templates").path
-        guard FileManager.default.fileExists(atPath: templatesPath) else {
-            Diagnostics.error("Could not find templates for Sourcery at: \(templatesPath)")
-            return []
-        }
-
         let workDirectoryUrl = context.pluginWorkDirectoryURL
         let outputDirectoryUrl = workDirectoryUrl.appending(path: "Generated")
         let cacheDirectoryUrl = workDirectoryUrl.appending(path: "Cache")
@@ -55,20 +54,28 @@ extension SourceryStencilPlugin {
         )
 
         // Generate codes from latest changes
+        let config = parseConfig(target: target)
         let sourceryExecutable = try context.tool(named: "sourcery")
+        let sourcesArgs = getSources(target: target).flatMap { url in
+            ["--sources", url.path]
+        }
+        let templateArgs = getTemplates(context: context).flatMap { url in
+            ["--templates", url.path]
+        }
+        let importArgs = ["--args", "imports=\(getImports(context: context, config: config))"]
+        let testableImportArgs = ["--args", "testableImports=\(getTestableImports(context: context, config: config))"]
+        let configArgs = getConfigArguments(config: config).flatMap { arg in
+            ["--args", arg]
+        }
         
-        let sourcesArgs = ["--sources", target.directory.string]
-        let templateArgs = ["--templates", templatesPath]
-        let importArgs = ["--args", "imports=\(getImports(context: context))"]
-        let testableImportArgs = ["--args", "testableImports=\(getTestableImports(context: context))"]
         let outputArgs = ["--output", outputDirectoryUrl.path]
         let cacheArgs = ["--cacheBasePath", cacheDirectoryUrl.path]
-        let additionalArgs = ["--verbose"]
+        let extraArgs = ["--verbose"]
         
         let sourceryCommand = Command.prebuildCommand(
             displayName: "[\(name)] Generate sources for target: \(target)",
             executable: sourceryExecutable.url,
-            arguments: sourcesArgs + templateArgs + importArgs + testableImportArgs + outputArgs + cacheArgs + additionalArgs,
+            arguments: sourcesArgs + templateArgs + importArgs + testableImportArgs + configArgs + outputArgs + cacheArgs + extraArgs,
             outputFilesDirectory: outputDirectoryUrl
         )
 
@@ -79,6 +86,26 @@ extension SourceryStencilPlugin {
         return URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()
             .deletingLastPathComponent()
+    }
+    
+    func parseConfig(target: Target) -> Config {
+        let configFileURL = URL(fileURLWithPath: target.directory.string)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .appending(path: ".testpack.json")
+        guard FileManager.default.fileExists(atPath: configFileURL.path) else {
+            return Config.defaultConfig
+        }
+        
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        do {
+            let data = try Data(contentsOf: configFileURL)
+            return try decoder.decode(Config.self, from: data)
+        } catch {
+            Diagnostics.warning("Failed to load config with error: \(error)")
+            return Config.defaultConfig
+        }
     }
 }
 

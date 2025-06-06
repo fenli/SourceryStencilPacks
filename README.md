@@ -19,10 +19,17 @@ Then add the plugins to your target:
 .target(
     name: "MyPackage",
     plugins: [
-        .plugin(name: "TestPack", package: "SourceryStencilPacks"),
-        // other plugins
+        // Regular target plugins
     ]
 )
+.testTarget(
+    name: "MyPackageTests",
+    dependencies: ["MyPackage"],
+    plugins: [
+        // Test target plugins
+        .plugin(name: "TestPack", package: "SourceryStencilPacks")
+    ]
+),
 ```
 
 ### XCode
@@ -104,9 +111,9 @@ struct ProductServiceTests {
 
     For primitive and standard types, random extension automatically generated like String.random(), Int.random(), Double.random(), etc.
 
-    Mocks and Random object only available on DEBUG mode, so it's suitable for testing (not included in release binary). 
+    If plugins is applied in .testTarget, the Mocks and Random object only available from unit test. But, if you prefer to apply on regular .target please use config debug_only=true so it's not included in release binary. 
 
-    For more sample usage, please see the SamplePackage.
+    For more sample usage, please see the [SamplePackage](./Sample/SamplePackage).
 
 #### Optional: Custom configuration
 Default plugin configuration should be suitable on most cases, but in case you need to customize it you can create `.testpack.json` inside your package directory (same level as `Package.swift`). All configuration keys here should be present otherwise it will use default value for all config.
@@ -121,9 +128,9 @@ Default plugin configuration should be suitable on most cases, but in case you n
 ```
 | Key                        | Default Value  | Description                                                 |
 |----------------------------|----------------|-------------------------------------------------------------|
-| `debug_only`               | `true`         | Generate mocks/random for Debug build only                  |
+| `debug_only`               | `false`        | Generate mocks/random for Debug build only.                 |
 | `random_std_lib`           | `true`         | Generate std lib random extension                           |
-| `random_std_lib_protection`| `fileprivate`  | Protection level of std lib random extension  	     	    |
+| `random_std_lib_protection`| `internal`     | Protection level of std lib random extension  	     	    |
 | `imports`                  | `[]`           | List of additional imports to generated sources             |
 | `testable_imports`         | `[]`           | List of additional @testable imports to generated sources   |
 

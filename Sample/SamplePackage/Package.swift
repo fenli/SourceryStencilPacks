@@ -19,13 +19,14 @@ let package = Package(
         .target(
             name: "SamplePackage",
             dependencies: [],
-            plugins: [
-                .plugin(name: "TestPack", package: "SourceryStencilPacks")
-            ]
+            plugins: []
         ),
         .testTarget(
             name: "SamplePackageTests",
-            dependencies: ["SamplePackage"]
+            dependencies: ["SamplePackage"],
+            plugins: [
+                .plugin(name: "TestPack", package: "SourceryStencilPacks")
+            ]
         ),
     ]
 )

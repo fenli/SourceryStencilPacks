@@ -1,13 +1,13 @@
 //
 // Copyright © 2025 Steven Lewi.
 // All Rights Reserved.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //    http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,10 +19,10 @@ import PackagePlugin
 
 struct TestPackPluginConfig: PluginConfig {
     static var defaultConfig: TestPackPluginConfig { TestPackPluginConfig() }
-    
-    var debugOnly: Bool = true
+
+    var debugOnly: Bool = false
     var randomStdLib: Bool = true
-    var randomStdLibProtection: String = "fileprivate"
+    var randomStdLibProtection: String = "internal"
     var imports: [String] = []
     var testableImports: [String] = []
 }
@@ -30,11 +30,19 @@ struct TestPackPluginConfig: PluginConfig {
 @main
 struct TestPackPlugin: SourceryStencilPlugin {
     var name: String = "TestPack"
-    
+    var configFileName: String = ".testpack.json"
+    typealias Config = TestPackPluginConfig
+
     func getSources(target: PackagePlugin.Target) -> [URL] {
-        [URL(fileURLWithPath: target.directory.string)]
+        if target.isTestTarget() {
+            // Tests target will use dependencies target source
+            return target.getDependenciesTargetSources()
+        } else {
+            // Regular target
+            return target.getSources()
+        }
     }
-    
+
     func getTemplates(context: PackagePlugin.PluginContext) -> [URL] {
         let pluginPath = getPluginRootPath()
         return [
@@ -42,20 +50,24 @@ struct TestPackPlugin: SourceryStencilPlugin {
             pluginPath.appending(path: "Stencils/Randomizable.stencil"),
         ]
     }
-    
-    func getImports(context: PluginContext, config: Config) -> [String] {
+
+    func getImports(target: Target, config: Config) -> [String] {
         config.imports
     }
-    
-    func getTestableImports(context: PluginContext, config: Config) -> [String] {
-        config.testableImports
+
+    func getTestableImports(target: Target, config: Config) -> [String] {
+        if target.isTestTarget() {
+            return target.getDependenciesTargetNames() + config.testableImports
+        } else {
+            return config.testableImports
+        }
     }
-    
-    func getConfigArguments(config: TestPackPluginConfig) -> [String] {
+
+    func getConfigArguments(target: Target, config: Config) -> [String] {
         return [
             "debugOnly=\(config.debugOnly)",
             "randomStdLib=\(config.randomStdLib)",
-            "randomStdLibProtection=\(config.randomStdLibProtection)"
+            "randomStdLibProtection=\(config.randomStdLibProtection)",
         ]
     }
 }

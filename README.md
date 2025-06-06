@@ -126,13 +126,13 @@ Default plugin configuration should be suitable on most cases, but in case you n
     "testable_imports": []
 }
 ```
-| Key                        | Default Value  | Description                                                 |
-|----------------------------|----------------|-------------------------------------------------------------|
-| `debug_only`               | `false`        | Generate mocks/random for Debug build only.                 |
-| `random_std_lib`           | `true`         | Generate std lib random extension                           |
-| `random_std_lib_protection`| `internal`     | Protection level of std lib random extension  	     	    |
-| `imports`                  | `[]`           | List of additional imports to generated sources             |
-| `testable_imports`         | `[]`           | List of additional @testable imports to generated sources   |
+| Key                        | Default Value  | Description |
+|----------------------------|----------------|-------------|
+| `debug_only`               | `false`        | Generate mocks/random for Debug build only. Default to `false` if applied on test target. If target is regular, then it's recommended to set as `true` |
+| `random_std_lib`           | `true`         | Generate std lib random extension |
+| `random_std_lib_protection`| `internal`     | Protection level of std lib random extension. If target is regular, then it's recommended to set as `fileprivate` |
+| `imports`                  | `[]`           | List of additional imports to generated sources |
+| `testable_imports`         | `[]`           | List of additional @testable imports to generated sources. Dependencies target is automatically added if target is test target. |
 
 
 ## License

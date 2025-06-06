@@ -30,7 +30,7 @@ struct GetProductListUseCaseTests {
     
     @Test
     func testExecuteSuccess() async throws {
-        let productsFromRepository = (0...5).map {_ in Product.random() }
+        let productsFromRepository = (0...5).map {_ in Product.random().copy(type: .apparel) }
         productRepositoryMock.getAllProductsProductReturnValue = productsFromRepository
         
         let result = try await useCase.execute()

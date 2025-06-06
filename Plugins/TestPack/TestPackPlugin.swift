@@ -31,7 +31,7 @@ struct TestPackPluginConfig: PluginConfig {
 struct TestPackPlugin: SourceryStencilPlugin {
     var name: String = "TestPack"
     
-    func getSources(target: any PackagePlugin.Target) -> [URL] {
+    func getSources(target: PackagePlugin.Target) -> [URL] {
         [URL(fileURLWithPath: target.directory.string)]
     }
     

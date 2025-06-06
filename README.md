@@ -109,11 +109,13 @@ struct ProductServiceTests {
 }
 ```
 
-    For primitive and standard types, random extension automatically generated like String.random(), Int.random(), Double.random(), etc.
+    For primitive and standard types, random extension automatically generated.
+    For example like String.random(), Int.random(), Double.random(), etc.
 
-    If plugins is applied in .testTarget, the Mocks and Random object only available from unit test. But, if you prefer to apply on regular .target please use config debug_only=true so it's not included in release binary. 
+    If plugins is applied in .testTarget, the Mocks and Random object only available from unit test.
+    But, if you prefer to apply on regular .target please use config debug_only=true so it's not included in release binary. 
 
-    For more sample usage, please see the [SamplePackage](./Sample/SamplePackage).
+    For more sample usage, please see the SamplePackage.
 
 #### Optional: Custom configuration
 Default plugin configuration should be suitable on most cases, but in case you need to customize it you can create `.testpack.json` inside your package directory (same level as `Package.swift`). All configuration keys here should be present otherwise it will use default value for all config.

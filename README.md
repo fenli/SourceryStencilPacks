@@ -11,7 +11,7 @@ Convenient way to use collections of Sourcery stencils as an SPM plugins and Xco
 Add this configuration to your `Package.swift`:
 ```swift
 dependencies: [
-    .package(url: "https://github.com/fenli/SourceryStencilPacks", from: "0.1.1"),
+    .package(url: "https://github.com/fenli/SourceryStencilPacks", from: "0.2.0"),
 ],
 ```
 Then add the plugins to your target:

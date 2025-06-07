@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// sourcery: Mockable
+// sourcery: Mockable, MockSwift
 protocol ProductRepository {
     
     func getAllProducts() async throws -> [Product]

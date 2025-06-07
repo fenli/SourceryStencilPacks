@@ -12,6 +12,7 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "SourceryStencilPacks", path: "../../../SourceryStencilPacks"),
+        .package(url: "https://github.com/leoture/MockSwift.git", from: "1.1.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -23,7 +24,10 @@ let package = Package(
         ),
         .testTarget(
             name: "SamplePackageTests",
-            dependencies: ["SamplePackage"],
+            dependencies: [
+                "SamplePackage",
+                "MockSwift"
+            ],
             plugins: [
                 .plugin(name: "TestPack", package: "SourceryStencilPacks")
             ]

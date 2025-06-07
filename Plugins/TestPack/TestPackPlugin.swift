@@ -48,6 +48,7 @@ struct TestPackPlugin: SourceryStencilPlugin {
         return [
             pluginPath.appending(path: "Stencils/Mockable.stencil"),
             pluginPath.appending(path: "Stencils/Randomizable.stencil"),
+            pluginPath.appending(path: "Stencils/MockSwift.stencil"),
         ]
     }
 

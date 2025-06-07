@@ -17,6 +17,50 @@
 import Foundation
 import PackagePlugin
 
+#if canImport(XcodeProjectPlugin)
+    import XcodeProjectPlugin
+#endif
+
+struct PluginTarget {
+    let name: String
+    let rootDirectory: URL
+    let sourcesDirectory: URL
+    let dependencies: [String]
+    let dependenciesSources: [URL]
+    let isTest: Bool
+
+    init(target: PackagePlugin.Target) {
+        self.name = target.name
+        self.rootDirectory = URL(fileURLWithPath: target.directory.string)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+        self.sourcesDirectory = target.getSourcesDirectory()
+        self.dependencies = target.getDependenciesTargetNames()
+        self.dependenciesSources = target.getDependenciesTargetSources()
+        self.isTest = target.isTestTarget()
+    }
+}
+
+#if canImport(XcodeProjectPlugin)
+    extension PluginTarget {
+        init(
+            context: XcodeProjectPlugin.XcodePluginContext,
+            target: XcodeProjectPlugin.XcodeTarget
+        ) {
+            self.name = target.displayName
+            self.rootDirectory = context.xcodeProject.directoryURL
+            self.sourcesDirectory = target.getSourcesDirectory()
+            self.dependencies = target.getDependenciesTargetNames(
+                context: context
+            )
+            self.dependenciesSources = target.getDependenciesTargetSources(
+                context: context
+            )
+            self.isTest = target.isTestTarget()
+        }
+    }
+#endif
+
 protocol PluginConfig: Decodable {
     static var defaultConfig: Self { get }
 }
@@ -27,42 +71,68 @@ protocol SourceryStencilPlugin: BuildToolPlugin {
     var name: String { get }
     var configFileName: String { get }
 
-    func getSources(target: Target) -> [URL]
+    func getSources(target: PluginTarget) -> [URL]
 
-    func getTemplates(context: PluginContext) -> [URL]
+    func getTemplates() -> [URL]
 
-    func getImports(target: Target, config: Config) -> [String]
+    func getImports(target: PluginTarget, config: Config) -> [String]
 
-    func getTestableImports(target: Target, config: Config) -> [String]
+    func getTestableImports(target: PluginTarget, config: Config) -> [String]
 
-    func getConfigArguments(target: Target, config: Config) -> [String]
+    func getConfigArguments(target: PluginTarget, config: Config) -> [String]
 }
 
 extension SourceryStencilPlugin {
 
-    func createBuildCommands(context: PluginContext, target: Target)
-        async throws -> [Command]
-    {
-        let workDirectoryUrl = context.pluginWorkDirectoryURL
-        let outputDirectoryUrl = workDirectoryUrl.appending(path: "Generated")
-        let cacheDirectoryUrl = workDirectoryUrl.appending(path: "Cache")
+    func createBuildCommands(
+        context: PluginContext,
+        target: Target
+    ) async throws -> [Command] {
+        return [
+            createCleanCommand(
+                targetName: target.name,
+                workDirectoryUrl: context.pluginWorkDirectoryURL
+            ),
+            createSourceryBuildCommand(
+                sourceryExecutable: try context.tool(named: "sourcery"),
+                workDirectoryUrl: context.pluginWorkDirectoryURL,
+                target: .init(target: target)
+            ),
+        ]
+    }
 
-        // Clean previously-generated codes
+    /// Clean previously-generated codes
+    private func createCleanCommand(
+        targetName: String,
+        workDirectoryUrl: URL
+    ) -> Command {
+        let outputDirectoryUrl = workDirectoryUrl.appending(path: "Generated")
         let cleanArgs = ["-rf", outputDirectoryUrl.absoluteString]
-        let cleanCommand = Command.prebuildCommand(
-            displayName: "[\(name)] Clean previously-generated data",
+        return .prebuildCommand(
+            displayName:
+                "[\(name)] Clean previously-generated data for \(targetName)",
             executable: .init(filePath: "/bin/rm")!,
             arguments: cleanArgs,
             outputFilesDirectory: workDirectoryUrl
         )
+    }
 
-        // Generate codes from latest changes
-        let config = parseConfig(target: target)
-        let sourceryExecutable = try context.tool(named: "sourcery")
+    /// Generate codes from latest changes
+    private func createSourceryBuildCommand(
+        sourceryExecutable: PackagePlugin.PluginContext.Tool,
+        workDirectoryUrl: URL,
+        target: PluginTarget,
+    ) -> Command {
+        let outputDirectoryUrl = workDirectoryUrl.appending(path: "Generated")
+        let cacheDirectoryUrl = workDirectoryUrl.appending(path: "Cache")
+
+        let config = parseConfig(
+            configFileURL: target.rootDirectory.appending(path: configFileName)
+        )
         let sourcesArgs = getSources(target: target).flatMap { url in
             ["--sources", url.path]
         }
-        let templateArgs = getTemplates(context: context).flatMap { url in
+        let templateArgs = getTemplates().flatMap { url in
             ["--templates", url.path]
         }
         let importArgs = [
@@ -72,15 +142,16 @@ extension SourceryStencilPlugin {
             "--args",
             "testableImports=\(getTestableImports(target: target, config: config))",
         ]
-        let configArgs = getConfigArguments(target: target, config: config).flatMap { arg in
-            ["--args", arg]
-        }
+        let configArgs = getConfigArguments(target: target, config: config)
+            .flatMap { arg in
+                ["--args", arg]
+            }
 
         let outputArgs = ["--output", outputDirectoryUrl.path]
         let cacheArgs = ["--cacheBasePath", cacheDirectoryUrl.path]
         let extraArgs = ["--verbose"]
 
-        let sourceryCommand = Command.prebuildCommand(
+        return .prebuildCommand(
             displayName: "[\(name)] Generate sources for target: \(target)",
             executable: sourceryExecutable.url,
             arguments: sourcesArgs + templateArgs + importArgs
@@ -88,8 +159,6 @@ extension SourceryStencilPlugin {
                 + extraArgs,
             outputFilesDirectory: outputDirectoryUrl
         )
-
-        return [cleanCommand, sourceryCommand]
     }
 
     func getPluginRootPath() -> URL {
@@ -98,11 +167,7 @@ extension SourceryStencilPlugin {
             .deletingLastPathComponent()
     }
 
-    func parseConfig(target: Target) -> Config {
-        let configFileURL = URL(fileURLWithPath: target.directory.string)
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-            .appending(path: configFileName)
+    func parseConfig(configFileURL: URL) -> Config {
         guard FileManager.default.fileExists(atPath: configFileURL.path) else {
             return Config.defaultConfig
         }
@@ -119,30 +184,15 @@ extension SourceryStencilPlugin {
     }
 }
 
-#if canImport(XcodeProjectPlugin)
-    import XcodeProjectPlugin
-
-    extension SourceryStencilPlugin {
-
-        func createBuildCommands(
-            context: XcodeProjectPlugin.XcodePluginContext,
-            target: XcodeProjectPlugin.XcodeTarget
-        ) throws -> [PackagePlugin.Command] {
-            // TODO: will be implemented later
-            return []
-        }
-    }
-#endif
-
 extension PackagePlugin.Target {
     func isTestTarget() -> Bool {
         return name.hasSuffix("Tests")
     }
 
-    func getSources() -> [URL] {
-        return [URL(fileURLWithPath: directory.string)]
+    func getSourcesDirectory() -> URL {
+        return URL(fileURLWithPath: directory.string)
     }
-    
+
     func getDependenciesTargetNames() -> [String] {
         var deps: [String] = []
         for dep in dependencies {
@@ -165,3 +215,90 @@ extension PackagePlugin.Target {
         return sources
     }
 }
+
+#if canImport(XcodeProjectPlugin)
+    extension SourceryStencilPlugin {
+
+        func createBuildCommands(
+            context: XcodeProjectPlugin.XcodePluginContext,
+            target: XcodeProjectPlugin.XcodeTarget
+        ) throws -> [PackagePlugin.Command] {
+            return [
+                createCleanCommand(
+                    targetName: target.displayName,
+                    workDirectoryUrl: context.pluginWorkDirectoryURL
+                ),
+                createSourceryBuildCommand(
+                    sourceryExecutable: try context.tool(named: "sourcery"),
+                    workDirectoryUrl: context.pluginWorkDirectoryURL,
+                    target: .init(
+                        context: context,
+                        target: target
+                    )
+                ),
+            ]
+        }
+    }
+
+    extension XcodeProjectPlugin.XcodeTarget {
+        func isTestTarget() -> Bool {
+            guard let kind = product?.kind else { return false }
+            if case .other(let name) = kind {
+                return name == "com.apple.product-type.bundle.unit-test"
+            }
+            return false
+        }
+
+        func getSourcesDirectory() -> URL {
+            let allPaths = inputFiles.map(\.url).filter {
+                $0.pathExtension == "swift"
+            }
+            let commonPrefix =
+                allPaths
+                .map { $0.path }
+                .reduce(allPaths.first?.path ?? "") { prefix, path in
+                    String(prefix.commonPrefix(with: path))
+                }
+
+            return URL(fileURLWithPath: commonPrefix, isDirectory: true)
+        }
+
+        func getDependenciesTargetNames(
+            context: XcodeProjectPlugin.XcodePluginContext
+        ) -> [String] {
+            var deps: [String] = []
+            for target in context.xcodeProject.targets {
+                if case .application = target.product?.kind {
+                    deps.append(target.displayName)
+                }
+            }
+            for dep in dependencies {
+                if case .target(let deptarget) = dep {
+                    deps.append(deptarget.displayName)
+                }
+            }
+            return deps
+        }
+
+        func getDependenciesTargetSources(
+            context: XcodeProjectPlugin.XcodePluginContext
+        ) -> [URL] {
+            var sources: [URL] = []
+            for target in context.xcodeProject.targets {
+                if case .application = target.product?.kind {
+                    sources.append(
+                        target.getSourcesDirectory()
+                    )
+                }
+            }
+            for dep in dependencies {
+                if case .target(let deptarget) = dep {
+                    sources.append(
+                        deptarget.getSourcesDirectory()
+                    )
+                }
+            }
+            return sources
+        }
+    }
+#endif

@@ -33,17 +33,17 @@ struct TestPackPlugin: SourceryStencilPlugin {
     var configFileName: String = ".testpack.json"
     typealias Config = TestPackPluginConfig
 
-    func getSources(target: PackagePlugin.Target) -> [URL] {
-        if target.isTestTarget() {
+    func getSources(target: PluginTarget) -> [URL] {
+        if target.isTest {
             // Tests target will use dependencies target source
-            return target.getDependenciesTargetSources()
+            return target.dependenciesSources
         } else {
             // Regular target
-            return target.getSources()
+            return [target.sourcesDirectory]
         }
     }
 
-    func getTemplates(context: PackagePlugin.PluginContext) -> [URL] {
+    func getTemplates() -> [URL] {
         let pluginPath = getPluginRootPath()
         return [
             pluginPath.appending(path: "Stencils/Mockable.stencil"),
@@ -52,19 +52,19 @@ struct TestPackPlugin: SourceryStencilPlugin {
         ]
     }
 
-    func getImports(target: Target, config: Config) -> [String] {
+    func getImports(target: PluginTarget, config: Config) -> [String] {
         config.imports
     }
 
-    func getTestableImports(target: Target, config: Config) -> [String] {
-        if target.isTestTarget() {
-            return target.getDependenciesTargetNames() + config.testableImports
+    func getTestableImports(target: PluginTarget, config: Config) -> [String] {
+        if target.isTest {
+            return target.dependencies + config.testableImports
         } else {
             return config.testableImports
         }
     }
 
-    func getConfigArguments(target: Target, config: Config) -> [String] {
+    func getConfigArguments(target: PluginTarget, config: Config) -> [String] {
         return [
             "debugOnly=\(config.debugOnly)",
             "randomStdLib=\(config.randomStdLib)",
@@ -72,3 +72,9 @@ struct TestPackPlugin: SourceryStencilPlugin {
         ]
     }
 }
+
+#if canImport(XcodeProjectPlugin)
+    import XcodeProjectPlugin
+
+    extension TestPackPlugin: XcodeBuildToolPlugin {}
+#endif

@@ -14,15 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-import Testing
-
-@testable import Sample
-
-struct SampleTests {
-
-    @Test func testRandomObject() async throws {
-        let cars = [Car].random(count: 10)
-        #expect(cars.count > 10)
-    }
+// sourcery: Randomizable
+enum Engine {
+    case ICE(capacity: Int)
+    case Hybrid(capacity: Int, kwh: Int)
+    case EV(kwh: Int)
 }

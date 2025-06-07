@@ -14,15 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-import Testing
-
-@testable import Sample
-
-struct SampleTests {
-
-    @Test func testRandomObject() async throws {
-        let cars = [Car].random(count: 10)
-        #expect(cars.count > 10)
-    }
+// sourcery: Randomizable=+array
+struct Car {
+    let brand: String
+    let model: String
+    let engineType: Engine
 }

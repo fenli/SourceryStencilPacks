@@ -126,6 +126,7 @@
 			);
 			dependencies = (
 				45EA17F92DE4472600911E89 /* PBXTargetDependency */,
+				450EF5E92DF433B1000E1E51 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				45EA17F52DE4472600911E89 /* SampleTests */,
@@ -215,6 +216,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		450EF5E92DF433B1000E1E51 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 450EF5E82DF433B1000E1E51 /* TestPack */;
+		};
 		45EA17F92DE4472600911E89 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 458DF71F2DA12151004C22E2 /* Sample */;
@@ -522,6 +527,11 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		450EF5E82DF433B1000E1E51 /* TestPack */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 45C4FBF42DBE3CEA0087104A /* XCLocalSwiftPackageReference "../../SourceryStencilPacks" */;
+			productName = "plugin:TestPack";
+		};
 		45C4FC4E2DBE43180087104A /* SamplePackage */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SamplePackage;

@@ -33,7 +33,11 @@ Then add the plugins to your target:
 ```
 
 ### XCode
--- coming soon --
+Integration into Xcode project:
+- In Xcode root project, navigate to your targets list in side bar.
+- Select target to integrate, eg: for TestPack plugins, select your `*Tests` target
+- Go to Build Phase -> Run Build Tool Plug-ins -> Add the plugin
+
 
 # Plugins
 ## :rocket: TestPack
@@ -109,13 +113,15 @@ struct ProductServiceTests {
 }
 ```
 
-    For primitive and standard types, random extension automatically generated.
-    For example like String.random(), Int.random(), Double.random(), etc.
-
-    If plugins is applied in .testTarget, the Mocks and Random object only available from unit test.
-    But, if you prefer to apply on regular .target please use config debug_only=true so it's not included in release binary. 
-
-    For more sample usage, please see the SamplePackage.
+> **Notes:**
+> 
+> For primitive and standard types, random extension automatically generated.
+> For example like String.random(), Int.random(), Double.random(), etc.
+> 
+> If plugins is applied in .testTarget, the Mocks and Random object only available from unit test.
+> But, if you prefer to apply on regular .target please use config debug_only=true so it's not included in release binary. 
+> 
+> For more sample usage, please see the SamplePackage.
 
 #### Optional: Custom configuration
 Default plugin configuration should be suitable on most cases, but in case you need to customize it you can create `.testpack.json` inside your package directory (same level as `Package.swift`). All configuration keys here should be present otherwise it will use default value for all config.

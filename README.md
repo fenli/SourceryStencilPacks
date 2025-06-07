@@ -136,6 +136,10 @@ Default plugin configuration should be suitable on most cases, but in case you n
 | `imports`                  | `[]`           | List of additional imports to generated sources |
 | `testable_imports`         | `[]`           | List of additional @testable imports to generated sources. Dependencies target is automatically added if target is test target. |
 
+#### Other testing libs integration
+If you are using [MockSwift](https://github.com/leoture/MockSwift), this plugin also provide autocreating the mocks using annotation `// sourcery: MockSwift` in your protocol. See sample [here](https://github.com/fenli/SourceryStencilPacks/blob/main/Sample/SamplePackage/Tests/SamplePackageTests/GetProductListUseCaseWithMockSwiftTests.swift).
+
+Are you using other testing tools to generate mock manually? you can suggest this plugin to integrate with that tools by [submitting new issue](https://github.com/fenli/SourceryStencilPacks/issues/new).
 
 ## License
 

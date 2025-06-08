@@ -121,7 +121,7 @@ extension SourceryStencilPlugin {
     private func createSourceryBuildCommand(
         sourceryExecutable: PackagePlugin.PluginContext.Tool,
         workDirectoryUrl: URL,
-        target: PluginTarget,
+        target: PluginTarget
     ) -> Command {
         let outputDirectoryUrl = workDirectoryUrl.appending(path: "Generated")
         let cacheDirectoryUrl = workDirectoryUrl.appending(path: "Cache")

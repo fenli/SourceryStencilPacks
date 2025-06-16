@@ -1,5 +1,7 @@
 # SourceryStencilPacks
-Convenient way to use collections of Sourcery stencils as an SPM plugins and Xcode plugins. Learn more about it from the [Sourcery repository](https://github.com/krzysztofzablocki/Sourcery).
+> Convenient way to use collections of Sourcery stencils as an SPM plugins and Xcode plugins.
+> This plugins provides simpler way to use sourcery binary with predefined templates without checking out whole sourcery repository.
+> Learn more about it from the [Sourcery](https://github.com/krzysztofzablocki/Sourcery) here.
 
 [![](https://img.shields.io/github/v/release/fenli/SourceryStencilPacks?style=flat&label=Latest%20Release&color=blue)](https://github.com/fenli/SourceryStencilPacks/releases)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Ffenli%2FSourceryStencilPacks%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/fenli/SourceryStencilPacks)
@@ -11,7 +13,7 @@ Convenient way to use collections of Sourcery stencils as an SPM plugins and Xco
 Add this configuration to your `Package.swift`:
 ```swift
 dependencies: [
-    .package(url: "https://github.com/fenli/SourceryStencilPacks", from: "0.2.0"),
+    .package(url: "https://github.com/fenli/SourceryStencilPacks", from: "0.2.1"),
 ],
 ```
 Then add the plugins to your target:

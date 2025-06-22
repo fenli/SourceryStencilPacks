@@ -13,7 +13,7 @@
 Add this configuration to your `Package.swift`:
 ```swift
 dependencies: [
-    .package(url: "https://github.com/fenli/SourceryStencilPacks", from: "0.2.1"),
+    .package(url: "https://github.com/fenli/SourceryStencilPacks", from: "0.3.0"),
 ],
 ```
 Then add the plugins to your target:

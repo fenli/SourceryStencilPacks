@@ -42,6 +42,7 @@ struct SourcePackPlugin: SourceryStencilPlugin {
             pluginPath.appending(path: "Stencils/Copyable.stencil"),
             pluginPath.appending(path: "Stencils/Equatable.stencil"),
             pluginPath.appending(path: "Stencils/Hashable.stencil"),
+            pluginPath.appending(path: "Stencils/Describable.stencil"),
         ]
     }
 

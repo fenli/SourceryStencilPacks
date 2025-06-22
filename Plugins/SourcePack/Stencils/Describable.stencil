@@ -1,0 +1,17 @@
+// swiftlint:disable line_length
+// swiftlint:disable variable_name
+
+import Foundation
+#if os(iOS) || os(tvOS) || os(watchOS)
+import UIKit
+#elseif os(OSX)
+import AppKit
+#endif
+
+{% for type in types.types where type|annotated:"Describable" or type|annotated:"DataRepresentable" %}
+extension {{ type.name }}: CustomStringConvertible {
+    public var description: String {
+        return "{{ type.name }}({% for variable in type.storedVariables %}{{ variable.name }}: \({{ variable.name }}){% if not forloop.last %}, {% endif %}{% endfor %})"
+    }
+}
+{% endfor %}

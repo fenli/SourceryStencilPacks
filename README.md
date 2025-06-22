@@ -54,6 +54,25 @@ Here are all the supported annotations:
 | `Copyable`                 | Implements copy function into classes or structs |
 | `DataRepresentable`        | Combine all Hashable, Equatable, Describable, and Copyable |
 
+#### How to generate boilerplate functions
+```swift
+// Generate hash, equals(==) and copy functions
+// sourcery: Hashable, Equatable, Copyable
+struct Product {
+    let name: String
+    let price: Double
+    let variants: [ProductVariant]
+}
+
+// Or simply use:
+// sourcery: DataRepresentable
+struct Product {
+    let name: String
+    let price: Double
+    let variants: [ProductVariant]
+}
+```
+
 ## :rocket: TestPack
 Utility for generating test doubles like mocks, stubs, and fakes (by generating random object).
 
@@ -83,7 +102,7 @@ protocol ProductRepository {
 
 // Generate Product.random() static function
 // sourcery: Randomizable
-struct Product: Equatable {
+struct Product {
     let name: String // String.random() automatically generated
     let price: Double // Double.random() automatically generated
     let variants: [ProductVariant] // Need to annotate also on ProductVariant
@@ -127,8 +146,7 @@ struct ProductServiceTests {
 }
 ```
 
-> **Notes:**
-> 
+> [!NOTE]
 > For primitive and standard types, random extension automatically generated.
 > For example like String.random(), Int.random(), Double.random(), etc.
 > 

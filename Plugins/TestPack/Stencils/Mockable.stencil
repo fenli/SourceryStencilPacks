@@ -1,4 +1,6 @@
 // Extended version of: https://github.com/krzysztofzablocki/Sourcery/blob/master/Templates/Templates/AutoMockable.stencil
+// Copyright (c) 2016-2021 Krzysztof Zabłocki
+
 // swiftlint:disable line_length
 // swiftlint:disable variable_name
 

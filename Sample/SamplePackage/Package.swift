@@ -20,7 +20,9 @@ let package = Package(
         .target(
             name: "SamplePackage",
             dependencies: [],
-            plugins: []
+            plugins: [
+                .plugin(name: "SourcePack", package: "SourceryStencilPacks")
+            ]
         ),
         .testTarget(
             name: "SamplePackageTests",

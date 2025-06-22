@@ -1,4 +1,6 @@
 // Extended version of: https://github.com/leoture/MockSwift/blob/master/Templates/MockSwift.stencil
+// Copyright (c) 2019 Jordhan Leoture
+
 // swiftlint:disable line_length
 // swiftlint:disable variable_name
 
@@ -12,7 +14,9 @@
 {% endif %}
 
 import Foundation
+#if canImport(MockSwift)
 import MockSwift
+#endif
 #if os(iOS) || os(tvOS) || os(watchOS)
 import UIKit
 #elseif os(OSX)

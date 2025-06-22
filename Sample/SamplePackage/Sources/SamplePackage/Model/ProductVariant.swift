@@ -15,8 +15,8 @@
 // limitations under the License.
 
 
-// sourcery: Randomizable=+array
-struct ProductVariant: Equatable {
+// sourcery: DataRepresentable, Randomizable=+array
+struct ProductVariant {
     let id: Int
     let name: String
 }

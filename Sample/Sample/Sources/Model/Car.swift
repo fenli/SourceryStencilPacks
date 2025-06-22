@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// sourcery: Randomizable=+array
+// sourcery: DataRepresentable, Randomizable=+array
 struct Car {
     let brand: String
     let model: String

@@ -111,18 +111,6 @@ extension {{ type.name }} {
             {% endfor %}
         )
     }
-    
-    func copy(
-        {% for var in type.variables %}
-        {{ var.name }}: {{ var.typeName | replace:"?","" }}? = nil{% if not forloop.last %},{% endif %}
-        {% endfor %}
-    ) -> {{ type.name | replace:"?","" }} {
-        return {{ type.name }}(
-            {% for var in type.variables %}
-            {{ var.name }}: {{ var.name }} ?? self.{{ var.name }}{% if not forloop.last %},{% endif %}
-            {% endfor %}
-        )
-    }
 }
 {% if type.annotations.Randomizable == "+array" %}
 extension Array where Element == {{ type.name }} {

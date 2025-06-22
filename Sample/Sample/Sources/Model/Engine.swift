@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// sourcery: Randomizable
+// sourcery: Hashable, Equatable, Randomizable
 enum Engine {
     case ICE(capacity: Int)
     case Hybrid(capacity: Int, kwh: Int)

@@ -1,0 +1,25 @@
+// swiftlint:disable line_length
+// swiftlint:disable variable_name
+
+import Foundation
+#if os(iOS) || os(tvOS) || os(watchOS)
+import UIKit
+#elseif os(OSX)
+import AppKit
+#endif
+
+{% for type in types.types|!enum where type|annotated:"Copyable" or type|annotated:"DataRepresentable" %}
+extension {{ type.name }} {
+    func copy(
+        {% for var in type.variables %}
+        {{ var.name }}: {{ var.typeName | replace:"?","" }}? = nil{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ) -> {{ type.name | replace:"?","" }} {
+        return {{ type.name }}(
+            {% for var in type.variables %}
+            {{ var.name }}: {{ var.name }} ?? self.{{ var.name }}{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        )
+    }
+}
+{% endfor %}

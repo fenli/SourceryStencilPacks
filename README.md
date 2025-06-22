@@ -22,6 +22,7 @@ Then add the plugins to your target:
     name: "MyPackage",
     plugins: [
         // Regular target plugins
+        .plugin(name: "SourcePack", package: "SourceryStencilPacks")
     ]
 )
 .testTarget(
@@ -42,6 +43,17 @@ Integration into Xcode project:
 
 
 # Plugins
+## :rocket: SourcePack
+Utility for generating boilerplate code like hashable, equatable, copyable, etc.
+Here are all the supported annotations:
+| Annotation                 | Description |
+|----------------------------|-------------|
+| `Hashable`                 | Implements Hashable into classes, structs or enums |
+| `Equatable`                | Implements Equatable into classes, structs or enums |
+| `Describable`              | Implements CustomStringConvertible into classes, structs or enums |
+| `Copyable`                 | Implements copy function into classes or structs |
+| `DataRepresentable`        | Combine all Hashable, Equatable, Describable, and Copyable |
+
 ## :rocket: TestPack
 Utility for generating test doubles like mocks, stubs, and fakes (by generating random object).
 
@@ -151,16 +163,4 @@ Are you using other testing tools to generate mock manually? you can suggest thi
 
 ## License
 
-    Copyright (C) 2025 Steven Lewi
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+SourceryStencilPacks is available under the Apache License Version 2.0. See [LICENSE](LICENSE) for more information.

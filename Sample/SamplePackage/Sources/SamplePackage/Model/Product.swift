@@ -14,8 +14,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// sourcery: Randomizable
-struct Product: Equatable {
+// sourcery: DataRepresentable, Randomizable
+struct Product {
     let name: String
     let price: Double
     let quantity: Int

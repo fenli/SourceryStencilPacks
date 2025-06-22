@@ -102,6 +102,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				45AE3AE52E07F7C100C459EA /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				458DF7222DA12151004C22E2 /* Sample */,
@@ -219,6 +220,10 @@
 		450EF5E92DF433B1000E1E51 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			productRef = 450EF5E82DF433B1000E1E51 /* TestPack */;
+		};
+		45AE3AE52E07F7C100C459EA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 45AE3AE42E07F7C100C459EA /* SourcePack */;
 		};
 		45EA17F92DE4472600911E89 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -531,6 +536,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 45C4FBF42DBE3CEA0087104A /* XCLocalSwiftPackageReference "../../SourceryStencilPacks" */;
 			productName = "plugin:TestPack";
+		};
+		45AE3AE42E07F7C100C459EA /* SourcePack */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 45C4FBF42DBE3CEA0087104A /* XCLocalSwiftPackageReference "../../SourceryStencilPacks" */;
+			productName = "plugin:SourcePack";
 		};
 		45C4FC4E2DBE43180087104A /* SamplePackage */ = {
 			isa = XCSwiftPackageProductDependency;
